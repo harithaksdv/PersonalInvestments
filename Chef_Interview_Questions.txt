@@ -1,0 +1,195 @@
+chef:
+
+Chef is both the name of a company and the name of a configuration management tool written in Ruby and Erlang. 
+It uses a pure-Ruby, domain-specific language (DSL) for writing system configuration "recipes". 
+Chef is used to streamline the task of configuring and maintaining a company's servers, and can integrate with cloud-based platforms such as Internap, Amazon EC2, Google Cloud Platform,
+OpenStack, SoftLayer, Microsoft Azure and Rackspace to automatically provision and configure new machines.
+Chef contains solutions for both small and large scale systems, with features and pricing for the respective ranges.
+
+The user writes "recipes" that describe how Chef manages server applications and utilities (such as Apache HTTP Server, MySQL, or Hadoop) and how they are to be configured. 
+These recipes (which can be grouped together as a "cookbook" for easier management) describe a series of resources that should be in a particular state: packages that should be installed,
+services that should be running, or files that should be written. 
+These various resources can be configured to specific versions of software to run and can ensure that software is installed in the correct order based on dependencies.
+
+Chef makes sure each resource is properly configured and corrects any resources that are not in the desired state.
+Chef can run in client/server mode, or in a standalone configuration named "chef-solo". 
+In client/server mode, the Chef client sends various attributes about the node to the Chef server. 
+The server uses Solr to index these attributes and provides an API for clients to query this information. 
+Chef recipes can query these attributes and use the resulting data to help configure the node.
+Traditionally, Chef was used to manage Linux but later versions support Microsoft Windows as well.
+It is one of the four major configuration management systems on Linux, along with CFEngine, Bcfg2, and Puppet.
+More than a configuration management tool, Chef, along with Puppet, Ansible, and Otter, is one of the industry's most notable Infrastructure as Code (IAC) tools.
+
+
+
+
+
+
+Chef Interview Questions:
+
+Chef is a tool used for Configuration Management and is closely competing with Puppet.
+Chef is used by many large infrastructure organizations. 
+
+Q1. What is Chef?
+
+It is a powerful automation platform that provides a way to transforms infrastructure into code. 
+Chef is a tool for which you write scripts that are used to automate processes. What processes? Pretty much anything related to IT.
+
+Now you can explain the architecture of Chef, it consists of:
+
+Chef Server: The Chef Server is the central store of your infrastructure’s configuration data.
+The Chef Server stores the data necessary to configure your nodes and provides search, a powerful tool that allows you to dynamically drive node configuration based on data.
+Chef Node: A Node is any host that is configured using Chef-client. 
+Chef-client runs on your nodes, contacting the Chef Server for the information necessary to configure the node. 
+Since a Node is a machine that runs the Chef-client software, nodes are sometimes referred to as “clients”.
+Chef Workstation: A Chef Workstation is the host you use to modify your cookbooks and other configuration data. 
+All the configurations are first tested in the Chef Workstation and then it is forwarded to the Chef Server.
+
+
+Q2. What is a Recipe in Chef?
+
+A Recipe is a collection of Resources that describes a particular configuration or policy. 
+A Recipe describes everything that is required to configure part of a system.
+
+Now after the definition I will explain the functions of Recipes by including the following points:
+
+Install and configure software components.
+Manage files.
+Deploy applications.
+Execute other Recipes.
+
+
+Q3. What is a Node in Chef?
+
+A Node represents a server and is typically a virtual machine, container instance, or physical server – basically any compute resource in your infrastructure that is managed by Chef.
+
+
+Q4. How does a Cookbook differ from a Recipe in Chef?
+
+A Recipe is a collection of Resources, and primarily configures a software package or some piece of infrastructure. 
+A Cookbook groups together Recipes and other information in a way that is more manageable than having just Recipes alone.
+
+
+Q5. What happens when you don’t specify a Resource’s action in Chef?
+
+When you don’t specify a resource’s action, Chef applies the default action.
+
+Now explain this with an example, the below resource:
+
+1 file 'C:\Users\Administrator\chef-repo\settings.ini' do
+2 content 'greeting=hello world'
+3 end
+
+is same as the below resource:
+
+1 file 'C:\Users\Administrator\chef-repo\settings.ini' do
+2 action :create
+3 content 'greeting=hello world'
+4 end
+
+because: create is the file Resource’s default action.
+
+
+Q6. Are these two Chef recipes the same?
+
+
+1 package 'httpd'
+2 service 'httpd' do
+3 action [:enable, :start]
+4 end
+&&
+
+1 service 'httpd' do
+2 action [:enable, :start]
+3 end
+4 package 'httpd'
+
+No, they are not. Remember that Chef applies resources in the order they appear. 
+So the first Recipe ensures that the httpd package is installed and then configures the service. 
+The second Recipe configures the service and then ensures the package is installed.
+
+Q7. Write a service Resource that stops and then disables the httpd service from starting when the system boots in Chef.
+
+Use the below Resource to stop and disable the httpd service from starting when system boots.
+
+1 service 'httpd' do
+2 action [:stop, :disable]
+3  end
+
+
+Q8. How does Chef-apply differ from Chef-client?
+
+Chef-apply is an executable program that runs a single Recipe from the command line. It is a part of the Chef development kit and a great way to explore resources.
+
+Syntax for Chef-apply is:
+
+1 chef-apply name_of_recipe.rb
+
+Chef-client applies a Cookbook. It is used for production purposes where you typically run Chef-client to apply one or more cookbooks.
+
+
+
+Q9. What is run-list in Chef?
+
+
+run-list lets you specify which Recipes to run, and the order in which to run them. The run-list is important when you have multiple Cookbooks, and the order in which they run matters.
+
+Depending on the discussion if you think more explanation is required just mention the below points
+
+A run-list is:
+
+An ordered list of roles and/or recipes that are run in the exact order defined in the run-list; 
+if a recipe appears more than once in the run-list, the chef-client will not run it twice.
+Always specific to the node on which it runs; nodes may have a run-list that is identical to the run-list used by other nodes.
+Stored as part of the node object on the Chef server.
+Maintained using knife, and then uploaded from the workstation to the Chef server, or is maintained using the Chef management console.
+
+
+Q10. What information do you need in order to bootstrap in Chef?
+
+Your node’s host name or public IP address.
+A user name and password you can log on to your node with.
+Alternatively, you can use key-based authentication instead of providing a user name and password.
+
+Q11. How do you apply an updated Cookbook to your node in Chef?
+
+There are three ways to apply an updated Cookbook to a node you can mention all or any one, I will suggest you to mention all three:
+
+Run knife ssh from your workstation.
+SSH directly into your server and run chef-client.
+You can also run chef-client as a daemon, or service, to check in with the Chef server on a regular interval, say every 15 or 30 minutes.
+
+
+
+Q12. What is the role of Starter Kit in Chef?
+
+Begin this answer by mentioning the functions of Starter Kit.
+
+Starter Kit will create the necessary configuration files like chef directory, knife.rb, the ORGANIZATION-validator.pem, and USER.pem files etc. 
+with the correct information that is required to interact with the Chef server.
+
+Now tell how to use Starter Kit, you can simply download the starter kit and then move it to the desired location on your workstation.
+
+
+Q13. What is the command you use to upload a cookbook to the Chef server?
+
+You can directly mention the command to upload a cookbook to the Chef server “knife cookbook upload”.
+
+
+Q14. What would you set your cookbook’s version to once it is ready to use in production?
+
+According to Semantic Versioning, you should set your cookbook’s version number to 1.0.0 once it is ready to use in production.
+
+
+Q15. What is the value of local development using Test Kitchen in Chef?
+
+I will mention the below points, this will give the interviewer a clear picture of your understanding of Test Kitchen.
+
+Test Kitchen enables you to use a variety of virtualization providers that create virtual machine or container instances locally on your workstation or in the cloud.
+It enables you to run your cookbooks on servers that resemble those that you use in production.
+It speeds up the development cycle by automatically provisioning and tearing down temporary instances, resolving cookbook dependencies, and applying your cookbooks to your instances.
+
+Q16. Where can you get reusable cookbooks that are written and maintained by the Chef community?
+
+You can directly answer this question by saying reusable Cookbooks are present at Chef Supermarket, https://supermarket.chef.io.
+

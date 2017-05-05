@@ -1,0 +1,714 @@
+Docker:
+
+Class 1:
+installation:
+
+Centos v7 
+64 bit installation.
+Kernal version should be 3.10 or more
+[root@tcox4 ~]#uname -r   : this command is to see the kernal version
+[root@tcox4 ~]#cd /etc/yum.repos.d
+[root@tcox4 yum.repos.d]# vim docker.repo
+
+   in docker.repo we r creating a section called dockerrepo
+
+   [dockerrepo]  
+    name= Docker Repository
+    baseurl=https://yum.dockerproject.org/repo/main/centos/7/
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://yum.dockerproject.org/gpg
+
+    :wq
+
+[root@tcox4 yum.repos.d]# yum update
+[root@tcox4 yum.repos.d]# yum install -y docker-engine
+[root@tcox4 yum.repos.d]# systrmctl enable docker
+[root@tcox4 yum.repos.d]# systemctl start docker
+[root@tcox4 yum.repos.d]# docker --version
+[root@tcox4 yum.repos.d]# docker images
+[root@tcox4 yum.repos.d]# exit
+[user@tcox4 ~]$ docker images
+Canot connect to the Docker deamon. Is the docker running on this host ?
+[user@tcox4 ~]$ su -
+password: 
+[root@tcox4 ~]cd /var/run
+[root@tcox4 run]#ll
+[root@tcox4 run]#ls -al dock*
+[root@tcox4 run]#cat /etc/group | grep docker 
+docker:x:988:		//this means, there is a docker group but no users associated to it.
+[root@tcox4 run]# usermod -a -G docker user
+[root@tcox4 run]#cat /etc/group | grep docker 
+docker:x:988:user
+[root@tcox4 run]# exit
+logout
+connection to tcox4.mylabserver.com closed.
+    //log back in to our lab server
+[tcox@ca-centos7video ~]$ ssh user@tcox4.mylabserver.com
+user@tcox4.mylabserver.com password:
+Last login: Tue......sep....
+[user@tcox4 ~] docker images
+Repository   TAG   ImageID   Created    Size
+
+
+Note: In this, we have Docker deomon installed and setup with the latest version available for our kernel
+ and our distribution by adding the repository we have created a docker deomen, and docker group created and we added a non privilaged user to that group so that it can connect to the docker. 
+
+
+
+Class 2:
+ 	 	
+create docker account.
+ksdvharitha
+Naga@123
+
+hub.docker.com
+
+
+Class 3:
+
+to pull base image from Docker hub
+[user@tcox4 ~]$ docker images
+rt now , we dont have any images created which means we can not run any containers.
+To search for a repository name. ex. say for centos
+[user@tcox4 ~]$  docker search centos
+//this gives image names and descriptions with some reputations too.
+[user@tcox4 ~]  docker search apache
+[user@tcox4 ~]$ docker search httpd
+[user@tcox4 ~]$ docker pull hello-world
+  hello-world is a basic image. 
+[user@tcox4 ~]$ docker images
+we can see the repository name hello-world with the tag latest.
+best practice is to use will tag names.
+[user@tcox4 ~]$ docker run hello-world:latest
+latest is the tag name for hello-world repository.
+this displays a "hello from docker!"
+[user@tcox4 ~]$ docker images
+images will be reffered with name of the image, tag, image id..
+
+[user@tcox4 ~]$ docker run c54863rbbdc
+c54863rbbdc is the image id.
+will will get the same responce that we got when we run "docker run hello-world:latest
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$ docker pull centos
+will get latest version of centos
+but we will pull centos version 6.
+[user@tcox4 ~]$ docker pull centos:centos6
+will pull centos and centos version 6.
+[user@tcox4 ~]$ docker pull centos
+will get the latest centos copy using default tag latest and it will tell that it is pulling from
+library/centos 
+[user@tcox4 ~]$ docker images
+now we see three different image 
+centos with tag centos6
+centos with tag centos
+hello-world with tag latest.
+the diff b/w centos and hello-world type is...
+the centos image is a basic docker image that is intended to be a container that we instantiate and make some changes, 
+and commit as a container as a new basic image with added functionality.
+for ex. if we are looking for a base image that our container could be instantiated on it  and run a service then we might be looking for a base image based on that name as below.
+[user@tcox4 ~]$docker search nginx
+we can see official build and also with many other images.
+in the o/p list we can see for 
+"several nginx images for web applications"
+[user@tcox4 ~]$docker pull nginx:latest
+when we see the nginx installing, we can see that it is pulling  multiple layers for this base image.
+say one for uderlying operating system.
+one for nginx package installation.
+one for nginx configuration.
+we can see this in the docker file to see the different tasks..
+if we build a image, just like when we commit a container, each change we made become a layer or a snapshot added to a existing image. 
+
+[user@tcox4 ~]$ docker images
+to see the services it has set up, what services might be running, path information, and any environment variables etc.
+we need to ask docker.
+we get that as JSON o/p. 
+JSON is a formatted o/p similar to xml but lil bor formatted,that we can parse with other tools. it is readable o/p . it provides information in detail about images.
+we do that based on the names.
+[user@tcox4 ~]$ docker inspect nginx 
+[user@tcox4 ~]$ docker inspect hello-world
+
+
+
+
+class 4 :
+---------
+
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$ docker run hello-world
+[user@tcox4 ~]$ docker search whalesay
+there is a image called whalesay, is a basic base image that docker uses to demonstrate how containers work.
+[user@tcox4 ~]$  docker pull docker/whalesay
+we can run whalesay with a specific image. it has the ability to say that image to say some thing that we say it to image.
+this a simple ex. to show hw to run a container.
+[user@tcox4 ~]$ docker run docker/whalesay cosway hello
+
+docker/whalesay this will make the image to pull/install and then run if the image is not pulled before on the same command.
+cowsay is actually a application that the container is running which happens to display what we are saying.
+[user@tcox4 ~]$ docker run docker/whalesay cosway IAMDOCKER
+
+above is just the way o run the container.
+
+Now, if we launch a no. of different containers now , and how do we will tell which container is currently running.??
+
+[user@tcox4 ~]$ docker ps 
+
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$docker inspect docker/whalesay
+
+can figure out what this whalesay container is meant to do. 
+
+[user@tcox4 ~]$ clear
+[user@tcox4 ~]$ docker ps
+[user@tcox4 ~]$ docker ps -a
+by the above command , we can get the containers that we have run that are is the stopped state.
+in the o/p:
+we have a unique container ID in the resulted list.
+we can see the commands that the conainer starts up with.
+we have names , docker by default when u run a image will not only assign a id but also assign a unique user friendly or easier to work with names with a underscore between them.
+to see a particular container we can say "docker inspect happy_borg"
+where happy_borg is the name of a container run .
+[user@tcox4 ~]$ docker inspect happy_borg
+
+[user@tcox4 ~]$ifconfig
+we can see the docker ipaddress range that can be given for the containers.
+
+[user@tcox4 ~]$ clear
+[user@tcox4 ~]$ docker ps -a
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$ docker run -it centos:latest /bin/bash
+to run the container in an interactive mode, connected to a terinal (which is t in the above command)
+and if we want to run it in the background we can attach a d for -it(i.e; -itd).
+/bin/bash is name of the command for the container to start up with.
+bcoz we are running interactively, on our terminal it will automatically attach as the root user in /bin/bash prompt.
+[root@72b2fdbf6747 /]# 
+this means we are logged in as root for 72b2fdbf6747 container.
+[root@72b2fdbf6747 /]# whoami
+root
+[root@72b2fdbf6747 /]# yum upgrade
+the above yum upgrade command, are actually upgrading the packages inside container.  
+we are no longer working on our host operating system, we are working on container perating system.
+Container operating system is not a full operating system, it only contains the libraries and dependencies that are necessary to run the minimal programs that we have installed.
+we dont have telnet , ssh..  etc even 
+[root@72b2fdbf6747 /]# ssh
+[root@72b2fdbf6747 /]# telnet
+command not found..
+
+the only command that is currently running on this container is what we started up with in interactive mode is "bash".
+ 
+[root@72b2fdbf6747 /]#
+
+
+
+now go to ur lab server
+[root@tcox6 ~]# ssh user@tcox4
+user@tcox4  is where our container is running..
+[user@tcox4 ~] $ docker ps
+this tells us that centos container is running /bin/bash.
+
+now, go back to the container OS, and exit that container.
+
+[root@72b2fdbf6747 /]#  exit
+[user@tcox4 ~] 
+
+
+now go to ur lab server
+[user@tcox4 ~]#docker ps
+now , we can see there are no currently running containers.
+[user@tcox4 ~]# docker ps -a
+we can see the last container that has been run.
+
+
+
+[user@tcox4 ~] docker run -d centos:latest /bin/bash
+to run /bin/bash in the background without being container to run without connecting to it.
+it executes /bin/bash and assigned a container id and then exited.
+[user@tcox4 ~] docker ps
+shows that container is now exited.
+
+
+now go to ur lab server
+[user@tcox4 ~]$docker ps -a 
+we cn see last container that was run.
+
+To write a script as part of launching it, 
+[user@tcox4 ~]$docker run -d centos:latest /bin/bash -e dowhile 
+-e is to execute a command.
+[user@tcox4 ~]$docker images
+Now, we know that doing a docker inspect on nginx , that "it actually starts the nginx web server".
+unless we do the exit on that container, there should be a web instance available on that container.
+[user@tcox4 ~]$docker run -d nginx:latest
+-d is to run it in disconnected mode.
+[user@tcox4 ~]$ docker ps
+we can see the nginx container is running, 
+we can see the command "nginx -g 'daemon off" is running in the direct mode rather than background.
+
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$ docker inspect tiny_pasteur
+tiny_pasteur is the name of running containers.
+
+
+we can look the IPaddress: 172.17.0.2 for ex
+we can ping that IP
+[user@tcox4 ~]$ ping 172.17.0.2
+[user@tcox4 ~]$docker ps
+here we can also the ports that are running for that container
+soo we should see port on the IP.
+in this case port 80 on 172.17.0.2
+[user@tcox4 ~]$ elinks
+command not found
+//elinks is just a text based web browser..  which is used to see weather we are abe to connect to the docker instance..
+
+[user@tcox4 ~]$ su -
+password:
+[root@tcox4 ~]#yum install elinks
+[root@tcox4 ~]# exit
+exit after elinks install
+[user@tcox4 ~]$ docker ps
+[user@tcox4 ~]$ elinks http://172.17.0.2 
+we cane see nginx web server successfully installed and working.
+come out of nginx.
+[user@tcox4 ~]$ telnet localhost 80
+command not found
+now, we dont have that it is running on our local system.
+meaning, that port 80 on local system is not actually doing anything. it is only running on the container that we have instantiated.
+
+[user@tcox4 ~]$ su -
+password:
+[root@tcox4 ~]# yum install telnet
+after install exit from root.
+[root@tcox4 ~]# exit
+[user@tcox4 ~]$ docker ps
+for ex. if we do elinks on local host
+[user@tcox4 ~]$ elinks http://localhost
+o/p: unaable to retrieve .. connection refused..
+we didnt get anything just like we did telnet localhost on port 80.
+[user@tcox4 ~]$ telnet localhost 80
+trying...
+connection refused
+[user@tcox4 ~]$  telnet 172.17.0.2
+here we get response from web server.
+connected..
+close the connection..
+[user@tcox4 ~]$ docker ps
+[user@tcox4 ~]$  docker stop tiny_pasteur
+[user@tcox4 ~]$  docker ps 
+[user@tcox4 ~]$ docker ps -a
+[user@tcox4 ~]$ clear
+we do have full control on container nameing convintion, but the names should be unique.
+[user@tcox4 ~]$  docker images
+[user@tcox4 ~]$  docker run -d --name=Myweb1 nginx:latest
+[user@tcox4 ~]$ docker ps
+we can see the name associated for the running nginx conatiner as Myweb1.
+[user@tcox4 ~]$ docker inspect Myweb1
+we can see the IPAdress is now 172.17.0.2
+[user@tcox4 ~]$ docker run -d --name=Myweb2 nginx:latest
+[user@tcox4 ~]$ docker inspect Myweb2
+we can see the IPAdress is now 172.17.0.3
+that means a new container will pick the new Ip adress from the available range.
+[user@tcox4 ~]$ docker ps
+there is one advantage here, that  both the containers are listening on port 80 on one single host, but bcoz they have unique container IP address.. we can refer to them with the IP.
+[user@tcox4 ~]$docker stop Myweb1
+[user@tcox4 ~]$docker stop Myweb2
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$docker ps -a
+
+
+class 5:
+--------
+
+COntainer life Style:
+
+[user@tcox4 ~]$ docker ps
+[user@tcox4 ~]$docker ps -a
+[user@tcox4 ~]$ docker run -d --Name=lifecycle1 nginx:latest
+life cycle starts with run 
+[user@tcox4 ~]$docker ps
+lifecycle1 is currently running.. :running stage
+and we know that the IPadress is 172.0.0.1 as it is the first nginx service 
+we can also attach to a container
+[user@tcox4 ~]$ docker attach Lifecycle1
+here we can just see a cursur, but not the prompt for anything.
+Becz we didnt start the container with a prompt.
+we are attached to the process of that particular container..
+
+
+
+
+open another tab: (2nd instance)
+[tcox@ca-centos7video ~]$ ssh user@tcox4.mylabserver.com
+user@tcox4.mylabserver.com's password:
+last login:------
+[user@tcox4 ~]$ docker ps
+we can see the running lifecycle1 container..
+
+
+go back to the first tab.. we can see we are attached to the container lifecycle1 and process ,and cursor blinking..
+if we do a ctrl + c.. 
+we now paused our docker container in this case bcoz it is actually running "nginx -g" (which is the starting command of nginx container.. we can see this when we do docker ps)
+[user@tcox4 ~]$ docker ps
+//we can see there are no running containers. our container has gone from the list.
+bcoz we caused the container to exit the process that starts when the container starts.
+
+in the life cycle , we have caused the life cycle of the container to stop and end.
+
+[user@tcox4 ~]$ docker ps -a
+[user@tcox4 ~]$ docker restart  Lifecycle1  / docker start Lifecycle1
+[user@tcox4 ~]$docker ps
+soo we can see the old container itselft started.. not a new container..
+
+now, what happens if we want to attach to a container , but we dont want to exit bcoz  we are not running anything that we can attach to.
+[user@tcox4 ~]$docker exec /bin/bash Lifecycle1
+o/p:EOF
+exec will allow u to execute something in the running container without effecting the command or the process that has been started by the container at the time of instantiation.
+here we got EOF bcoz it is reading  /bin/bash as container name. 
+below is the correct syntax
+
+//-it is bcoz we do want to interactively attach on tty to the container Lifecycle1  
+[user@tcox4 ~]$docker exec -it Lifecycle1 /bin/bash
+
+
+
+
+
+go to the another tab: (2nd instance)
+
+[user@tcox4 ~] docker ps
+can see the running Lifecycle1 container.
+
+go back to 1st tab (1st instance) 
+and press enter to run the command 
+i.e:
+[user@tcox4 ~]$docker exec -it Lifecycle1 /bin/bash
+press enter
+root@29a5ab013vdc:/#
+
+//we are logged in to the container now.
+// root@29a5ab013vdc : is the container ID
+
+root@29a5ab013vdc:/# ps aux | grep nginx
+//this is to se that we are actually in the container that is running nginx in the current life cycle.
+
+
+now, 
+go to the another tab: (2nd instance)
+
+[user@tcox4 ~] docker ps
+we can see that its running..
+
+go back to 1st tab (1st instance)
+root@29a5ab013vdc:/# exit
+//if we had attached to the container, so for ex. if this container had run nginx and bash prompt at the same time.. we are attached to the bash prompt.
+if we hit exit here, if we are attached to the container , the life cycle of the container will stop the container.. bcoz the container was lauched with a particular process that we are attached to and exited.
+so the container reads that as a stop for the container itself.
+root@29a5ab013vdc:/# exit
+press enter 
+o/p: exit
+in this case our container continues to run..
+[user@tcox4 ~]$
+
+
+
+now, 
+go to the another tab: (2nd instance)
+[user@tcox4 ~]$docker ps
+we can see our container is running..
+
+so, we can continue to run things/do things on a container thats running, we just dont want to attach to it we want to execute other things from the contianer.
+this gives the ability to connect to bash instance to pramote a build.., we can treat that like any other server simply by doing a docker exec , whic would eventually drop us into a ssh prompt.
+
+[user@tcox4 ~]$docker stop Lifecycle1
+[user@tcox4 ~]$dockeer ps
+no more containers running
+
+
+so we have the ability to stop, start and restart containers.
+and also to run a new container which is a kickoff in the lifecycle of a container.
+and also we have a exec command to execute other commands in a running container , so that when we are done and we exit  what ever we start within that container will not exiting the container itself. its not finishing the lifecycle of that container.
+soo, its important to realize , that when we attach to a container it attaches to what ever process or command was run when the container was instantiated. (it can be a shell, or another command that is running ex. web service.).
+
+
+class 6:
+--------
+
+how to deal with images that are no longer needed...
+
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$docker ps
+lifecycle1 is running
+[user@tcox4 ~]$ docker stop Lifecycle1
+[user@tcox4 ~]$ docker ps
+[user@tcox4 ~]$ docker ps -a
+[user@tcox4 ~]$ dockr images
+//container images can b deleted at any point of time by using docker rmi (remove image) command .
+[user@tcox4 ~]$docker rmi centos:centos6
+we can use repository and Tag or we can use image ID to remove a particular image.
+here centos is the repository name.
+and centos6 is the Tag value.
+centos is removed without any issue boz we havent used any container based up on that image.
+
+
+now, we will try to remove an image that has had containers run on it in the past 
+[user@tcox4 ~]$ docker rmi hello-world
+
+it will tell us "unable to remove repository reference "hello-world" (must force) - container 3c559779e02d(container id) is using referenced image c54a2cc56cbb (image id).
+that means, if we do docker ps -a 
+[user@tcox4 ~]$docker ps -a
+we got some containers that we have run.. say hello-world run based up on the base image "/hello"
+we dont want to remove a container image that may have either active or previously active containers on them bcoz we may need the base image.
+Although we have the abilitilty to force the remove with a docker rmi -f  .
+docker rmi -f hello-world .
+but, typically what we does is, we remove the containers that are dependent on the base image .
+
+[user@tcox4 ~]$ docker pa -a
+copy the container id/name of the Image hello-world. (ex. container id 3c559779e02d)
+[user@tcox4 ~]$docker rm 3c559779e02d
+3c559779e02d  // means the 3c559779e02d is no longer there
+[user@tcox4 ~]$docker ps -a
+now there are no dependencies. now we may be able to delete the hello-world IMAGE.
+[user@tcox4 ~]$docker images
+[user@tcox4 ~]$docker rmi hello-world:latest
+still we get an error, because it has one more container dependent o that image.
+so, what if we have many no. of cantainers dependent on that image.
+we can do remove a multiple containers at a time by doing:
+cmd: docker rm containername1 containername2 containerid name id .. etc 
+or we can use hand bash command substitution 
+[user@tcox4~]$ docker ps -a -q
+//will give all the id's for the different containers that are stopped on our system.
+
+[user@tcox4 ~]$ docker rm `docker ps -a -q`
+//the above command is to delete all stopped containers that have been run on this system and nolonger need.
+[user@tcox4 ~]$docker ps -a
+// all the containers are now gone.
+[user@tcox4 ~]$ docker Images
+[user@tcox4 ~]$docker rmi hello-world:latest
+will delete the image without haveing to be forced.
+
+Now, we see what happens when a container is running
+[user@tcox4 ~]$docker run -d nginx:latest
+[user@tcox4 ~]$docker ps
+//we can see a container running
+[user@tcox4 ~]$docker rmi nginx:latest
+//same error saying unable to rempve repository reference.
+still we can remove container with -f option despite of running/stoped container
+[user@tcox4 ~]$ docker stop elated_wilson
+//elated_wilson is the running container name.
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$ docker run docker/whalesay cowsay hellother
+//this will run that container
+[user@tcox4 ~]$ docker ps -a
+which gives us the container that we now need to able to remove 
+[user@tcox4 ~]$ docker images
+[user@tcox4 ~]$ docker rmi docker/whalesay
+gives an error saying currently it has a cntainer referencing it.
+but we can do it with a docker rmi -f on a docker/whalesay
+[user@tcox4 ~]$ docker rmi -f docker/whalesay
+[user@tcox4 ~]$ docker images
+we can see the conatiner reference in the past run containers list
+[user@tcox4 ~]$ docker ps -a
+[user@tcox4 ~]$ docker start modest_synder
+//modest_synder is the name of container that we run before "cowsay hellothere"
+the container is still running without the base image, bcoz the container is  a whole snapshot of a base image.
+
+
+class 7:
+---------
+
+Redirection ports and volumes:
+
+we are going to direct the port that is listening to http on our container to a port on our underlying host.
+
+[user@tcox4 ~]$docker images
+[user@tcox4 ~]$docker run -d nginx:latest
+its gonna launch a container that we gonna connect to..
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$docker insect on inflable_visvaraya | grep IPAddr
+//inflable_visvaraya  is the container name
+//we see that IPAddress: currently havin 172.17.0.2 as it is the only container currently running..
+
+[user@tcox4 ~]$ elinks http://172.17.0.2
+we can see the default nginx site.
+[user@tcox4 ~]$elinks http://localhost
+we dont get the page.. as there is nothing running on the local host.
+However, we can redirect any exposed ports to our localhost in such a way that we can connect to them if we know what the ports are.
+there are ways to find out the exposed ports.
+
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$docker stop nflable_visvaraya
+[user@tcox4 ~]$docker rm `docker ps -a -q`
+will remove all the previous containers
+
+[user@tcox4 ~]$docker images
+[user@tcox4 ~]$docker run -d --name=webserver1 -P nginx:latest
+-P (capital p) says that any ports that are exposed to my container i want u to make available to my host operating system on a random port b/w 32768 - 65000.
+
+we can get the ports that are available in a couple of different ways.
+[user@tcox4 ~]$docker ps
+we can see under ports as 0.0.0.0:32771->80/tcp, 0.0.0.0:32770->443/tcp
+which means that port 32771 is bound to all local interfaces, localhost as well as the IP that is assigned to the local host.. 
+
+[user@tcox4 ~]$elinks http://172.17.0.2
+will get the nginx site
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$elinks http://localhost:32771
+will get to nginx site.
+we cant do it on port 80, as it is stillnot listening.
+elinks http://localhost:32771 --> by connecting to localhost it automatically forwarding that port to the container at 172.17.0.2  on port 80.
+so , there are two ways to connect to that particular container.
+we can connect directly with that IP if we have or if we are  on the n/w of our host or any n/w that we can see the IP and know what that IP Adress is along with port for it. 
+
+It can also be obtained by using docker port command
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$docker port webserver1 $CONTAINERPORT
+o/p: 443/tcp -> 0.0.0.0:32770
+80/tcp -> 0.0.0.0:32771
+this will tells that the container port 443 will goes to all local adress on port 32770
+this will tells that the container port 80 will goes to all local adress on port 32771
+
+[user@tcox4 ~]$docker stop webserver1
+
+now, what if we want to bind to a specific port on our host rather than picked up in a range b/w 32768-65000.
+
+docker run -d  -p 8080:80 
+here it is small p (-p) that says bind to local port 8080 to container port 80.
+we can even say multiple prts like docker run -d  -p 8080:80 8443:843 so on..
+in this case we will do only one binding.
+
+[user@tcox4 ~]$docker run -d  -p 8080:80  --name=webserver2 nginx:latest
+[user@tcox4 ~]$docker ps
+we can se that localport 8080 is bind to container port 80 and container port 443 is not binding to local port but its available in the container.
+
+[user@tcox4 ~]$elinks http://localhost:8080
+we get the web site.
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$dockerdocker stop webserver2
+
+// the above is usefull for variety of reasons bcz , we no need to worry abt routing. we can just say docker server for production u can connect to 8080 for development u can connect to 8081 etc.
+And there are ways that we can abstract those ports either by load balancer or by useing container management service like kubernet etc..
+
+there are some additional flexibilities, bcoz we cant pass stuff from host to our container that actually copying it into the container either during the build time of the base image or building the container.
+that means, we can mount directories from our underlying host inside our container.
+and we can do this in couple of ways.
+
+1st way 
+[user@tcox4 ~]$docker run -d -p 8080:80  --name=webserver3 -v /mnt/data nginx:latest
+-v (small v) /mnt/data is the mount that we want to create, it will create a mount point inside the container clled /mnt/data
+// so now we created a container that has a mount point  mnt/data inside that container.
+
+[user@tcox4 ~]$docker stop webserver3
+
+[user@tcox4 ~]$ mkdir www
+[user@tcox4 ~]$cd www
+[user@tcox4 www]$vim index.html
+<html>
+  <head</head>
+<body>
+<HR>
+this is a test page
+<Hr/>
+<body>
+</html>
+
+:wq
+
+[user@tcox4 ~]$docker run -d -p 8080:80 --name=webserver4 -v /home/user/www:/usr/share/nginx/html nginx:latest
+[user@tcox4 ~]$docker ps
+[user@tcox4 ~]$elinks http://localhost:8080
+
+we can see the page that we created on local host and mounted in the container.
+
+now , add one more line in the index.html in our local machine and save it.
+
+[user@tcox4 ~]$ elinks http://localhost:8080
+this will show the latest change too.
+
+
+
+Class8:
+--------
+
+create our own base image.
+[user@tcox4 ~]$mkdir Builds
+[user@tcox4 Builds]$ll
+[user@tcox4 Builds]$docker images
+[user@tcox4 Builds]$docker ps
+if any thing is running stop that.
+[user@tcox4 Builds]$docker stop webserver4
+[user@tcox4 Builds]$docker ps -a
+[user@tcox4 Builds]$docker rm `docker ps -a -q`
+[user@tcox4 Builds]$docker ps -a
+[user@tcox4 Builds]$docker ps
+[user@tcox4 Builds]$docker images
+we can see everything is cleared we just have the images.
+[user@tcox4 Builds]$vim Dockerfile
+
+firt thing it should contain is where is it coming from somthing that we pull base from docker hub..
+
+    FROM debian:stable 
+    MAINTAINER ksdvharitha <haritha.kodey@gmail.com    //docker hub user name and mail id.
+    
+    RUN apt-get update    //since it is a debian based
+    RUN apt-get upgrade   
+
+   :wq
+
+[user@tcox4 Builds]$docker build -t ksdvharitha/myapache .
+[user@tcox4 Builds]$ vim Dockerfile
+
+  add below line 
+     RUN apt-get install telnet
+
+    :wq
+
+[user@tcox4 Builds]$docker build -t ksdvharitha/myapache .
+
+this will work fine..
+now lets try to error something by adding 
+   RUN my-command
+
+   :wq
+[user@tcox4 Builds]$docker build -t ksdvharitha/myapache .
+we can see it fails saying "my-command not found.." and returned non-zero code 
+[user@tcox4 Builds]$docker images
+we only have the latest build image that e created.
+
+[user@tcox4 Builds]$docker rmi ksdvharitha/myapache
+
+
+[user@tcox4 Builds]$docker rm `docker ps -a -q`
+
+[user@tcox4 Builds]$docker rmi ksdvharitha/myapache
+[user@tcox4 Builds]$vim Dockerfile
+
+and remove "RUN my-command" line
+:wq
+
+
+one thing we have to notice when we run the docker build "docker build -t ksdvharitha/myapache ." , step 1 is aa container.. step 2 is another container.. step 3 is anothe container..
+we can combine layers when building our containers.. 
+
+[user@tcox4 Builds]$vim Dockerfile
+remove the telnet intsllation line and build the container.
+ remove: RUN apt-get install telnet
+
+[user@tcox4 Builds]$docker build -t ksdvharitha/myapache .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
